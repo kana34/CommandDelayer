@@ -1,0 +1,10 @@
+name: CommandDelayer
+main: kana.CommandDelayer.CommandDelayer
+author: kana34
+website: http://www.2k16.ovh
+description: Execute des commandes en differet
+depends: [Vault]
+version: 0.2
+commands:
+    cd:
+        description: /cd help.
