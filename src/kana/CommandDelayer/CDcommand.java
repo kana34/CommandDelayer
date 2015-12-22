@@ -14,6 +14,7 @@ public class CDcommand implements CommandExecutor{
 	private Player player;
 	private String commandString;
 	private List<String> commande;
+	private List<String> commandes;
 	
 	CommandDelayer plugin;
 	
@@ -32,6 +33,9 @@ public class CDcommand implements CommandExecutor{
         		return true;
         	}
         	if(args.length == 1){
+        		//--------------
+        		//---- HELP ----
+        		//--------------
         		if(args[0].equalsIgnoreCase("help")){
         			sender.sendMessage(ChatColor.GOLD + "---------------------- CommandDelayer help ----------------------");
         			sender.sendMessage(ChatColor.YELLOW + "/cd help " + ChatColor.GREEN + "Affiche l'aide du plugin");
@@ -40,40 +44,71 @@ public class CDcommand implements CommandExecutor{
         			sender.sendMessage(ChatColor.YELLOW + "/cd command {joueur} {commande sans le '/' } " + ChatColor.GREEN + "Stocke la commande");
         			return true;
         		}
-        		if(args[0].equalsIgnoreCase("recup")){
-        			List<String> commande = this.plugin.getConfig().getStringList(player.getName().toString());
+        		//---------------
+        		//---- RECUP ----
+        		//---------------
+        		else if(args[0].equalsIgnoreCase("recup")){
         			
+        			// On récupère la liste des commandes
+        			//-----------------------------------
+        			this.commande = this.plugin.getConfig().getStringList(player.getName().toString());
+        			
+        			// On execute les commandes
+        			//-------------------------
         			for (int i = 0; i < commande.size(); i++) {
         				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), commande.get(i));
         			}
         			
+        			// On supprime le commandes du joueur
+        			//-----------------------------------
         			this.plugin.getConfig().set(player.getName(), null);
         			this.plugin.saveConfig();
         			
+        			// On envoie un message de confirmation
+        			//-------------------------------------
         			sender.sendMessage(ChatColor.GOLD + "[CommandDelayer] " + ChatColor.GREEN + "Vos commandes ont étais transférées !");
         			return true;
         		}
-        		if(args[0].equalsIgnoreCase("liste")){
-        			List<String> commande = this.plugin.getConfig().getStringList(player.getName().toString());
+        		//---------------
+        		//---- LISTE ----
+        		//---------------
+        		else if(args[0].equalsIgnoreCase("liste")){
         			
+        			// On récupère la liste des commandes
+        			//-----------------------------------
+        			this.commande = this.plugin.getConfig().getStringList(player.getName().toString());
+        			
+        			// On envoie un message avec la liste des commandes
+        			//-------------------------------------------------
         			for (int i = 0; i < commande.size(); i++) {
         				sender.sendMessage(ChatColor.GOLD + "[CommandDelayer] " + ChatColor.GREEN + commande.get(i));
         			}
         			return true;
         		}
+        		//--------------
+        		//---- NULL ----
+        		//--------------
+        		else{
+        			sender.sendMessage(ChatColor.GOLD + "[CommandDelayer] " + ChatColor.RED + "Commande inconnu !!!");
+        			return false;
+        		}
         	}
-        	if(player == null || Vault.permission.playerHas(player,"CommandDelayer.admin")){
-        		if(args[0].equalsIgnoreCase("command")){
-	        		this.commandString = "";
-	        	      for (int i = 1; i < args.length; i++) {
-	        	        commandString = commandString + " " + args[i];
-	        	      }
-	        	      this.commande = this.plugin.getConfig().getStringList(args[0]);
-	        	      
-	        	      commande.add(commandString.substring(1));
-	        	      this.plugin.getConfig().set(args[0], commande);
-	        	      this.plugin.saveConfig();
-	        	      return true;
+        	else if(player == null || player.hasPermission("commanddelayer.admin")){
+        		//-------------------------
+        		//---- ENVOIE COMMANDE ----
+        		//-------------------------
+        		if(args[0].equalsIgnoreCase("command")){        			
+        			commandString = args[2];        			
+        			for (int i = 3; i < args.length; i++) {
+        				commandString = commandString + " " + args[i];
+        			}
+	    	      
+        			this.commandes = this.plugin.getConfig().getStringList(args[1]);
+	    	      
+		    	    commandes.add(commandString);
+		    	    this.plugin.getConfig().set(args[1], commandes);
+		    	    this.plugin.saveConfig();
+		    	    return true;
         		}
         		else{
         			sender.sendMessage(ChatColor.GOLD + "[CommandDelayer] " + ChatColor.RED + "Commande inconnu !!!");
